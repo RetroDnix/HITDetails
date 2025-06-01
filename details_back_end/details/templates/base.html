@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    {# 块标题 #}
+    <title>{% block mytitle %}
+        HITDetails管理端
+        {% endblock %}</title>
+
+    {#块样式，使用bootstrap.load_css()加载bootstrap的css资源#}
+    {% block mystyle %}
+    {% endblock %}
+    {{ bootstrap.load_css() }}
+
+</head>
+
+<body>
+    {#块导航栏#}
+    {% block navbar %}
+    <style>
+        .navbar .navbar-nav .nav-link {
+            font-size: 20px;
+        }
+
+        .navbar-text {
+            font-size: 20px;
+        }
+    </style>
+    <nav class="navbar navbar-expand-sm navbar-light bg-light">
+        <a class="navbar-brand">HITDetails</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item {% if active_page == 'overview' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('overview') }}">概览</a>
+                </li>
+                <li class="nav-item {% if active_page == 'manage' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('manage') }}">管理</a>
+                </li>
+                <li class="nav-item {% if active_page == 'log' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('log') }}">日志</a>
+                </li>
+
+            </ul>
+        </div>
+        <div class="navbar-text" id="current-time"></div>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="navbar-text" href="{{ url_for('logout') }}">登出</a>
+    </nav>
+    {% endblock %}
+
+    {#块内容#}
+    {% block concent %}
+    {% endblock %}
+
+    {#块JavaScript ，使用bootstrap.load_js()加载bootstrap的JavaScript资源#}
+    {% block scripts %}
+    {% endblock %}
+    {{ bootstrap.load_js() }}
+    <script>
+        function updateClock() {
+
+            function formatTime(number) {
+                return number < 10 ? '0' + number : number;
+            }
+
+            // 格式化时间
+            var now = new Date();
+            var hours = formatTime(now.getHours());
+            var minutes = formatTime(now.getMinutes());
+            var seconds = formatTime(now.getSeconds());
+            var formattedTime = hours + ':' + minutes + ':' + seconds;
+
+            // 将时间插入到页面中
+            document.getElementById('current-time').innerHTML = formattedTime;
+        }
+
+        // 每秒钟更新时间
+        setInterval(updateClock, 1000);
+    </script>
+
+    {#块底部内容#}
+    {% block footer %}
+    {% endblock %}
+</body>
+
+</html>

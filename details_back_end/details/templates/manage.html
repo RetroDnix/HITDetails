@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block mytitle %}
+HITDetails概览
+{% endblock %}
+
+{% block mystyle %}
+<style>
+    /* 自定义样式 */
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .btn {
+        margin: 10px;
+    }
+
+    .data-list {
+        margin-top: 10px;
+    }
+
+    .data-list div {
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block concent %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <button id="calc_summary" class="btn btn-primary">处理数据库中的summary请求</button>
+            <div id="summary_number" class="data-list" style="font-size: 18px; font-weight: bold;">尚未处理的请求：</div>
+        </div>
+        <div class="col">
+            <button id="MySQL_Backup" class="btn btn-primary">备份MySQL数据库</button>
+            <div id="MySQL_Backup_Number" class="data-list" style="font-size: 18px; font-weight: bold;">已有的备份文件：</div>
+            <div id="MySQL_Backup_List" class="data-list"></div>
+        </div>
+        <div class="col">
+            <button id="Redis_Backup" class="btn btn-primary">备份Redis数据库</button>
+            <div id="Redis_Backup_Number" class="data-list"  style="font-size: 18px; font-weight: bold;">已有的备份文件：</div>
+            <div id="Redis_Backup_List" class="data-list"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 使用 AJAX 请求的函数
+        function calc_summary() {
+            $.ajax({
+                url: '/api/summary/calc_summary',
+                type: 'GET',
+            });
+        }
+
+        // 点击按钮时发送 AJAX 请求
+        $('#calc_summary').click(function () {
+            calc_summary();
+            alert("指令已发出!");
+        });
+
+        $('#MySQL_Backup').click(function () {
+            $.ajax({
+                url: '/api/backup/mysql',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    alert(data.promt);
+					fetchData();
+                },
+				error: function (xhr, status, error) {
+                    alert('Ajax请求失败:', error);
+                }
+            });
+        });
+
+        $('#Redis_Backup').click(function () {
+            $.ajax({
+                url: '/api/backup/redis',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    alert(data.promt);
+					fetchData();
+                },
+				error: function (xhr, status, error) {
+                    // 在请求出错时的回调函数
+                    alert('Ajax请求失败:', error);
+                }
+            });
+        });
+
+        function fetchData() {
+            $.ajax({
+                url: '{{url_for("backupdata")}}',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#summary_number').text("尚未处理的请求：" + data.success_number);
+                    $('#MySQL_Backup_Number').text("已有的备份文件：" + data.mysql_backup_number);
+                    $('#Redis_Backup_Number').text("已有的备份文件：" + data.redis_backup_number);
+					$('#Redis_Backup_List').empty();
+                    data.redis_backup_list.forEach(function (item) {
+                        $('#Redis_Backup_List').append("<div>" + item + "</div>");
+                    });
+					$('#MySQL_Backup_List').empty();
+                    data.mysql_backup_list.forEach(function (item) {
+                        $('#MySQL_Backup_List').append("<div>" + item + "</div>");
+                    });
+                },
+                error: function (xhr, status, error) {
+                    // 在请求出错时的回调函数
+                    console.log('Ajax请求失败:', error);
+                }
+            });
+        }
+
+        fetchData();
+    });
+</script>
+{% endblock %}

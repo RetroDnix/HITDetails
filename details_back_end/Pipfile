@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask-wtf = "*"
+pymysql = "*"
+python-dotenv = "*"
+flask = "*"
+gunicorn = "*"
+gevent = "*"
+flask-cors = "*"
+redis = "*"
+pymysql-pool = "*"
+bootstrap-flask = "*"
+psutil = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
