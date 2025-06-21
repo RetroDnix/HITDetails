@@ -1,9 +1,11 @@
 from flask_bootstrap import Bootstrap4
 from flask import Flask
+from flask_cors import CORS
 import logging
 
 app = Flask('details')
 app.config.from_pyfile('config.py')
+CORS(app)
 
 bootstrap = Bootstrap4(app)
 

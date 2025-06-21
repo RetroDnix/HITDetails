@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { toDateTimeChinese, toDateTimeChineseSlim, toDateTimeChineseWeekDay, parseTime } from '@/utils/DataTimeFomatter';
 import { getGroupByID, getSubGroupList } from '@/utils/Getter'
 import { CreateScheduleFlip, postMessage } from '@/utils/Updater'
+import { getAppendix } from '@/utils/AutoSchedule';
 
 import ScheduleItem from '@/type/ScheduleItem';
 
@@ -52,6 +53,41 @@ const showError = ref(false)
 const ErrorText = ref("")
 
 const IsSendingMes = ref(false)
+const isParsingAppendix = ref(false)
+
+const autoSchedule = async () => {
+	if (Body.value == '') {
+		showError.value = true
+		ErrorText.value = '请先填写通知的正文！'
+		return
+	}
+	isParsingAppendix.value = true
+	const result = await getAppendix(Title.value + Body.value)
+	if (result == undefined) {
+		showError.value = true
+		ErrorText.value = '自动识别日程失败！'
+		isParsingAppendix.value = false
+		return
+	}
+	console.log(result)
+	var schedules = eval(result)
+	for (let i = 0; i < schedules.length; i++) {
+		const schedule: ScheduleItem = {
+			ScheduleID: 0,
+			Title: schedules[i].ScheTitle,
+			Body: schedules[i].ScheBody,
+			Location: schedules[i].ScheLocation,
+			Type: schedules[i].ScheisDDL ? 4 : 3,
+			StartTime: parseTime(schedules[i].ScheStartTime),
+			FinishTime: parseTime(schedules[i].ScheFinishTime),
+			Stars: 0,
+			Created: false,
+			Tags: [],
+		}
+		Schedules.value.push(schedule)
+	}
+	isParsingAppendix.value = false
+}
 
 const InitSchedule = (key?: number) => {
 	if (key == undefined) {
@@ -400,6 +436,8 @@ function handleFileChange(event: any) {
 				</template>
 			</v-list-item>
 		</v-list>
+		<v-btn class="mt-6" color="blue-lighten-2" prepend-icon="mdi-robot" style="margin-left: 30%;width: 40%;"
+			@click="autoSchedule()" :loading="isParsingAppendix" :active="!IsSendingMes">自动识别日程</v-btn>
 		<v-btn class="mt-6 mb-12" color="blue-lighten-2" prepend-icon="mdi-plus" style="margin-left: 30%;width: 40%;"
 			@click="InitSchedule(); Overlay = true" :active="!IsSendingMes">添加日程附件</v-btn>
 	</v-container>

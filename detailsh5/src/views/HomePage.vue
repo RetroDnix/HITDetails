@@ -126,8 +126,8 @@ onMounted(() => {
             <v-btn type="submit" width="250px" elevation="1" color="light-blue-darken-3" @click="login()" class="mt-3"
                 :loading="Logging">登录</v-btn>
         </v-form>
-        <v-btn width="250px" elevation="1" color="light-blue-darken-3" class="mt-3"
-            @click="WelinkLogin()">微信登录</v-btn>
+        <!-- <v-btn width="250px" elevation="1" color="light-blue-darken-3" class="mt-3"
+            @click="WelinkLogin()">微信登录</v-btn> -->
         <v-btn width="250px" elevation="1" color="green" @click="router.push('Help')" class="mt-3">使用教程</v-btn>
     </v-container>
     <v-container class="BottomPanel">

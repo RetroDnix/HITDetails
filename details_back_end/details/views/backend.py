@@ -1,5 +1,8 @@
 import re,psutil,os
-from flask import session,render_template,jsonify,redirect,url_for
+from flask import session,render_template,jsonify,redirect,url_for, request
+
+import requests
+from io import BytesIO
 
 from details import app
 from details.api_v1.database import DataBase
@@ -123,3 +126,29 @@ def backupdata():
 
     return jsonify(success_number=success_number, redis_backup_number = n1, mysql_backup_number = n2,
                    redis_backup_list = l1,mysql_backup_list = l2)
+
+
+@app.route('/upload-image', methods=['POST'])
+def upload_image():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part in request'}), 400
+
+    file = request.files['file']
+    data = file.stream.read()
+
+    files = {'file': (file.filename, BytesIO(data), file.mimetype)}
+
+    try:
+        response = requests.post(
+            'https://picui.cn/api/v1/upload',
+            files=files,
+            headers={
+                "Authorization": "Bearer 1230|Wnq1A7RDHQBvgXSEAGLiGjnV7M9b28iWlCyuDmR2",
+                "Accept": "application/json",
+            }
+        )
+        
+        return jsonify(response.json())
+    except Exception as e:
+        print(f"Error uploading image: {e}")
+        return jsonify({'error': str(e)}), 500

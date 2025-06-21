@@ -50,7 +50,7 @@ class FetchSummaryAPI(MethodView):
 		else:
 			return jsonify({'Text':text})
 prompt = "用大约40个字归纳这条通知的主要内容:"
-openai.api_key = "<KEY HERE>"
+openai.api_key = "<OPENAI_API_KEY>"
 class CalcSummaryAPI(MethodView):
 	def get(self):
 		db = DataBase()
